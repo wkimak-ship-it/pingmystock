@@ -4,221 +4,484 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>PingMyStock — back-in-stock alerts that can't fail silently</title>
+<meta name="description" content="PingMyStock emails your shoppers the moment a sold-out item is back, proves every send, warns you instantly if one fails, and shows the money waiting on each out-of-stock product. Get early access.">
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <meta name="theme-color" content="#3538cd">
-<meta name="description" content="PingMyStock emails your shoppers the moment a sold-out item is back, proves every send, warns you instantly if one fails, and shows the money waiting on each out-of-stock product. Get early access.">
 <style>
   :root{
     --navy:#16172a; --ink:#1f2233; --grey:#5f6573; --line:#e6e8ee;
-    --bg:#eef0f3; --card:#ffffff; --indigo:#3538cd; --indigo-h:#2c2fb4;
-    --green:#1f9d57; --red:#c4362f; --soft:#f5f7fa;
+    --bg:#ffffff; --tint:#f7f8fb; --card:#ffffff; --indigo:#3538cd; --indigo-h:#2c2fb4;
+    --green:#1f9d57; --red:#c4362f;
   }
   *{margin:0;padding:0;box-sizing:border-box}
   html{scroll-behavior:smooth}
   body{font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--ink);
-    background:var(--bg);line-height:1.5;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:1080px;margin:0 auto;padding:0 22px}
+    background:var(--bg);line-height:1.6;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 24px}
   a{color:var(--indigo);text-decoration:none}
+  section{position:relative}
+  .tint{background:var(--tint)}
+  .eyebrow{display:inline-block;font-size:13px;font-weight:600;color:var(--indigo);
+    background:rgba(53,56,205,.10);border-radius:7px;padding:5px 12px;margin-bottom:18px}
+  h2{font-size:34px;line-height:1.12;font-weight:700;color:var(--navy);letter-spacing:-.02em}
+  .lead{font-size:18px;color:var(--grey);max-width:34em;margin:14px auto 0}
 
-  /* top bar */
-  .top{display:flex;align-items:center;justify-content:space-between;padding:20px 0}
+  /* header */
+  .top{position:sticky;top:0;z-index:50;background:rgba(255,255,255,.86);backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--line)}
+  .topin{display:flex;align-items:center;justify-content:space-between;padding:14px 0}
   .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:20px;color:var(--navy)}
-  .pill{font-size:12.5px;font-weight:600;color:var(--indigo);background:#eceefe;
-    border:1px solid #d9ddfb;border-radius:999px;padding:5px 12px}
+  .nav-cta{display:inline-block;background:var(--indigo);color:#fff;font-weight:600;font-size:14px;
+    padding:9px 18px;border-radius:9px}
+  .nav-cta:hover{background:var(--indigo-h)}
 
   /* hero */
-  .hero{display:grid;grid-template-columns:1.05fr 1fr;gap:48px;align-items:center;padding:34px 0 54px}
-  .eyebrow{font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--indigo);margin-bottom:14px}
-  h1{font-size:43px;line-height:1.08;font-weight:760;color:var(--navy);letter-spacing:-.015em;margin-bottom:16px}
-  h1 .u{background:linear-gradient(transparent 62%,#ffe39e 62%)}
-  .sub{font-size:18px;color:var(--grey);margin-bottom:26px;max-width:30em}
-
-  /* form card */
-  .form{background:var(--card);border:1px solid var(--line);border-radius:16px;
-    padding:20px;box-shadow:0 10px 34px rgba(20,23,42,.08)}
-  .form .lead{font-weight:650;color:var(--navy);font-size:15px;margin-bottom:12px}
+  .hero{text-align:center;padding:64px 0 0}
+  .hero h1{font-size:54px;line-height:1.06;font-weight:760;color:var(--navy);letter-spacing:-.025em;max-width:15.5em;margin:0 auto 18px}
+  .hero h1 .u{background:linear-gradient(transparent 62%,#ffe39e 62%)}
+  .hero .sub{font-size:20px;color:var(--grey);max-width:30em;margin:0 auto 28px}
+  .form{max-width:430px;margin:0 auto;background:var(--card);border:1px solid var(--line);border-radius:16px;
+    padding:18px;box-shadow:0 12px 36px rgba(20,23,42,.08);text-align:left}
+  .form .flead{font-weight:650;color:var(--navy);font-size:15px;margin-bottom:11px}
   .field{display:block;width:100%;font-size:15px;color:var(--ink);background:#fff;
-    border:1.5px solid #dfe2ea;border-radius:10px;padding:13px 14px;margin-bottom:10px;font-family:inherit}
+    border:1.5px solid #dfe2ea;border-radius:10px;padding:12px 13px;margin-bottom:9px;font-family:inherit}
   .field:focus{outline:none;border-color:var(--indigo);box-shadow:0 0 0 3px #e2e4fb}
-  textarea.field{resize:vertical;min-height:44px}
-  .btn{display:block;width:100%;cursor:pointer;border:none;border-radius:10px;
-    background:var(--indigo);color:#fff;font-weight:700;font-size:16px;padding:14px;font-family:inherit;
-    transition:background .15s,transform .05s}
-  .btn:hover{background:#2c2fb4}
-  .btn:active{transform:translateY(1px)}
+  textarea.field{resize:vertical;min-height:42px}
+  .btn{display:block;width:100%;cursor:pointer;border:none;border-radius:10px;background:var(--indigo);
+    color:#fff;font-weight:700;font-size:16px;padding:13px;font-family:inherit;transition:background .15s}
+  .btn:hover{background:var(--indigo-h)}
   .btn[disabled]{opacity:.65;cursor:default}
-  .micro{font-size:12.5px;color:#8b909c;margin-top:11px;text-align:center}
+  .micro{font-size:12.5px;color:#8b909c;margin-top:10px;text-align:center}
   .micro b{color:var(--grey);font-weight:600}
-  .ok{display:none;text-align:center;padding:14px 6px}
+  .ok{display:none;text-align:center;padding:12px 6px}
   .ok .big{font-size:18px;font-weight:700;color:var(--green);margin-bottom:6px}
   .ok .sm{font-size:14px;color:var(--grey)}
   .err{display:none;color:var(--red);font-size:13px;margin-top:8px;text-align:center}
   .hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
 
-  /* shot */
-  .shot{margin:0}
-  .shot img{width:100%;height:auto;display:block;border-radius:14px;
-    box-shadow:0 18px 50px rgba(20,23,42,.16)}
-  .shotcap{font-size:13px;color:#8b909c;text-align:center;margin-top:12px}
+  /* hero product stage + browser frame */
+  .stage{margin-top:54px;padding:60px 24px 0;
+    background:radial-gradient(58% 70% at 50% 0%, rgba(53,56,205,.16), transparent 72%)}
+  .browser{max-width:880px;margin:0 auto;border:1px solid rgba(22,23,42,.10);border-radius:14px;overflow:hidden;
+    background:#fff;box-shadow:0 28px 70px -22px rgba(20,23,42,.30)}
+  .bbar{height:38px;display:flex;align-items:center;gap:8px;padding:0 14px;border-bottom:1px solid #eceef1;background:#f6f7f9}
+  .bdot{width:11px;height:11px;border-radius:50%}
+  .browser img{width:100%;display:block}
+  .stagewrap{position:relative;max-width:880px;margin:0 auto}
+  .callout{position:absolute;display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:9px;
+    font-size:13px;font-weight:600;background:#fff;color:var(--navy);box-shadow:0 8px 24px rgba(20,23,42,.18);z-index:3}
+  .callout .d{width:8px;height:8px;border-radius:50%}
+
+  /* stat band */
+  .stats{padding:34px 0}
+  .statgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;text-align:center}
+  .stat .n{font-size:40px;font-weight:760;color:var(--navy);letter-spacing:-.02em;line-height:1}
+  .stat .l{font-size:14px;color:var(--grey);margin-top:8px}
 
   /* problem strip */
-  .strip{background:var(--navy);color:#fff;padding:44px 0;margin-top:8px}
-  .strip h2{font-size:25px;font-weight:720;letter-spacing:-.01em;margin-bottom:14px}
-  .quote{border-left:3px solid #ffd24a;padding:6px 0 6px 16px;margin:18px 0;
-    font-size:18px;font-style:italic;color:#e9eaf3;max-width:40em}
-  .strip p{color:#b9bdce;font-size:16px;max-width:44em}
+  .strip{background:var(--navy);color:#fff;padding:62px 0}
+  .strip h2{color:#fff}
+  .strip .qt{border-left:3px solid #ffd24a;padding:8px 0 8px 18px;margin:18px 0;font-size:19px;font-style:italic;color:#e9eaf3;max-width:40em}
+  .strip p{color:#b9bdce;font-size:17px;max-width:44em}
   .strip .em{color:#fff;font-weight:650}
 
-  /* features */
-  .feat{padding:56px 0 16px}
-  .feat .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:15px;padding:24px}
-  .ic{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;
-    font-size:21px;margin-bottom:14px}
-  .ic.b{background:#eceefe}.ic.g{background:#e4f6ec}.ic.m{background:#fdf2dd}
-  .card h3{font-size:17px;color:var(--navy);font-weight:700;margin-bottom:7px}
-  .card p{font-size:14.5px;color:var(--grey)}
-  .tag{font-size:11.5px;font-weight:700;color:var(--indigo);text-transform:uppercase;letter-spacing:.04em;margin-top:10px}
+  /* feature rows */
+  .feat{padding:78px 0}
+  .frow{display:grid;grid-template-columns:1fr 1fr;gap:54px;align-items:center;margin-bottom:64px}
+  .frow:last-child{margin-bottom:0}
+  .frow.rev .fcopy{order:2}
+  .frow h3{font-size:27px;font-weight:720;color:var(--navy);letter-spacing:-.015em;margin-bottom:13px;line-height:1.15}
+  .frow p{font-size:16.5px;color:var(--grey);margin-bottom:16px}
+  .chk{list-style:none;display:flex;flex-direction:column;gap:9px}
+  .chk li{display:flex;gap:10px;align-items:flex-start;font-size:15.5px;color:var(--ink)}
+  .chk .ic{flex:0 0 auto;width:20px;height:20px;border-radius:50%;background:#e4f6ec;color:var(--green);
+    display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+  .fvis{position:relative}
 
-  /* closing */
-  .close{text-align:center;padding:54px 0 60px}
-  .close h2{font-size:28px;color:var(--navy);font-weight:740;margin-bottom:10px}
-  .close p{color:var(--grey);font-size:16.5px;margin-bottom:22px}
-  .cta2{display:inline-block;background:var(--indigo);color:#fff;font-weight:700;font-size:16px;
-    padding:14px 30px;border-radius:11px}
-  .cta2:hover{background:#2c2fb4}
+  /* mini UI fragments */
+  .ui{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;box-shadow:0 22px 50px rgba(20,23,42,.10)}
+  .ui-h{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px}
+  .lrow{display:flex;align-items:center;font-size:14px;padding:8px 0;border-top:1px solid #f0f1f4}
+  .lrow:first-of-type{border-top:none}
+  .lrow .tick{width:22px;font-weight:800}
+  .lrow .ok2{color:var(--green)}.lrow .no2{color:var(--red)}
+  .lrow .em2{color:#22242b}.lrow .tm{margin-left:auto;color:#a0a3a8;font-size:13px}
+  .alert{background:#fdecec;border:1px solid #f6caca;border-radius:11px;padding:14px 16px}
+  .alert .t{color:#a32d2d;font-weight:700;font-size:15px}
+  .alert .s{color:#6b6b6b;font-size:13.5px;margin-top:4px}
+  .alert .ping{display:inline-flex;align-items:center;gap:6px;margin-top:12px;font-size:12.5px;font-weight:700;
+    color:var(--indigo);background:#eceefe;border-radius:7px;padding:5px 10px}
+  .rrow{display:flex;justify-content:space-between;align-items:center;padding:11px 0;border-top:1px solid #f0f1f4}
+  .rrow:first-of-type{border-top:none}
+  .rrow .nm{font-size:14.5px;color:#22242b}.rrow .vv{font-size:13.5px;color:var(--grey);white-space:nowrap}
+  .rrow .vv b{color:#11131a;font-weight:700}
+  .hero-money{background:#f4f6f8;border-radius:10px;padding:14px 16px;margin-bottom:12px}
+  .hero-money .lbl{font-size:12.5px;color:var(--grey)}
+  .hero-money .big{font-size:28px;font-weight:760;color:#11131a}
 
-  footer{border-top:1px solid var(--line);padding:26px 0;color:#9aa0ac;font-size:13px;text-align:center}
+  /* email phone section */
+  .emailsec{background:var(--navy);color:#fff;padding:80px 0;overflow:hidden}
+  .emailsec h2{color:#fff}
+  .emailsec .lead{color:#b9bdce}
+  .emailgrid{display:grid;grid-template-columns:1fr 360px;gap:48px;align-items:center;margin-top:40px}
+  .emailgrid .ecopy h3{font-size:22px;font-weight:700;color:#fff;margin:18px 0 10px}
+  .emailgrid .ecopy p{color:#b9bdce;font-size:16px;margin-bottom:14px}
+  .emailgrid .ecopy .chk li{color:#e9eaf3}
+  .emailgrid .ecopy .chk .ic{background:rgba(53,56,205,.30);color:#cfd2ff}
+  .phonewrap{position:relative;justify-self:center}
+  .phone{width:330px;background:#0e0f1c;border-radius:40px;padding:12px;box-shadow:0 40px 90px -20px rgba(0,0,0,.6),0 0 120px -10px rgba(53,56,205,.4)}
+  .screen{background:#fff;border-radius:30px;overflow:hidden}
+  .sbar{height:30px;background:#f6f7f9;display:flex;align-items:center;justify-content:space-between;padding:0 18px;font-size:12px;font-weight:600;color:#22242b}
+  .inbox{display:flex;gap:11px;padding:14px 16px;border-bottom:1px solid #eef0f3;align-items:flex-start}
+  .av{flex:0 0 auto;width:36px;height:36px;border-radius:50%;background:#e4f6ec;color:var(--green);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px}
+  .inbox .who{font-size:13.5px;font-weight:700;color:#11131a}
+  .inbox .subj{font-size:13px;color:#22242b;margin-top:2px}
+  .inbox .pre{font-size:12.5px;color:#9aa0ac;margin-top:2px}
+  .inbox .when{margin-left:auto;font-size:11.5px;color:#a0a3a8;white-space:nowrap}
+  .ebody{padding:20px 18px 22px;text-align:center}
+  .ethumb{width:100%;height:120px;border-radius:12px;background:linear-gradient(135deg,#dfe3ff,#eef0f3);display:flex;align-items:center;justify-content:center;color:#6b6f86;font-size:13px;margin-bottom:16px}
+  .ebody .et{font-size:18px;font-weight:760;color:#11131a;margin-bottom:7px}
+  .ebody .ep{font-size:13.5px;color:#6b6b6b;margin-bottom:16px;line-height:1.5}
+  .shopbtn{display:inline-block;background:var(--indigo);color:#fff;font-weight:700;font-size:14px;padding:11px 26px;border-radius:9px}
+
+  /* before / after */
+  .vs{padding:80px 0}
+  .vsquote{max-width:680px;margin:24px auto 38px;background:#fff;border:1px solid var(--line);border-radius:14px;
+    padding:22px 24px;box-shadow:0 18px 44px rgba(20,23,42,.08);text-align:center}
+  .vsquote .stars{color:#f5a524;font-size:15px;letter-spacing:2px;margin-bottom:8px}
+  .vsquote .qt{font-size:17px;font-style:italic;color:var(--ink);line-height:1.5}
+  .vsquote .by{font-size:13px;color:#9aa0ac;margin-top:10px}
+  .vsgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:880px;margin:0 auto}
+  .vscol{border-radius:16px;padding:26px 26px 30px}
+  .vscol.other{background:#fff;border:1px solid var(--line)}
+  .vscol.us{background:#fff;border:2px solid rgba(53,56,205,.55);box-shadow:0 22px 50px rgba(53,56,205,.12)}
+  .vscol .ch{font-size:13px;font-weight:700;text-transform:none;margin-bottom:16px}
+  .vscol.other .ch{color:#9aa0ac}.vscol.us .ch{color:var(--indigo)}
+  .vsitem{display:flex;gap:11px;align-items:flex-start;padding:11px 0;font-size:15.5px;border-top:1px solid #f2f3f6}
+  .vsitem:first-of-type{border-top:none}
+  .vsitem .m{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
+  .other .vsitem{color:var(--grey)} .other .vsitem .m{background:#f0f1f4;color:#9aa0ac}
+  .us .vsitem{color:var(--ink)} .us .vsitem .m{background:#e6e7fb;color:var(--indigo)}
+
+  /* bento */
+  .bento{padding:14px 0 80px}
+  .bgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:20px}
+  .btile{background:#fff;border:1px solid var(--line);border-radius:16px;padding:22px;box-shadow:0 16px 40px rgba(20,23,42,.06)}
+  .btile .bi{width:38px;height:38px;border-radius:10px;background:#eceefe;color:var(--indigo);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:800;margin-bottom:13px}
+  .btile h4{font-size:15.5px;color:var(--navy);font-weight:700;margin-bottom:6px}
+  .btile p{font-size:13.5px;color:var(--grey)}
+
+  /* faq */
+  .faq{padding:78px 0}
+  .faqwrap{max-width:760px;margin:30px auto 0}
+  details{border-bottom:1px solid var(--line)}
+  summary{cursor:pointer;list-style:none;padding:18px 2px;font-size:16.5px;font-weight:650;color:var(--navy);
+    display:flex;justify-content:space-between;align-items:center;gap:16px}
+  summary::-webkit-details-marker{display:none}
+  summary .pm{flex:0 0 auto;color:var(--indigo);font-size:20px;font-weight:400;transition:transform .2s}
+  details[open] summary .pm{transform:rotate(45deg)}
+  details p{padding:0 2px 20px;color:var(--grey);font-size:15.5px;max-width:60em}
+
+  /* final cta */
+  .final{background:var(--navy);color:#fff;text-align:center;padding:80px 0}
+  .final h2{color:#fff;font-size:36px;margin-bottom:12px}
+  .final p{color:#b9bdce;font-size:17px;margin-bottom:26px}
+  .cta2{display:inline-block;background:var(--indigo);color:#fff;font-weight:700;font-size:17px;padding:15px 34px;border-radius:11px}
+  .cta2:hover{background:var(--indigo-h)}
+  .final .rea{margin-top:14px;font-size:13px;color:#8b8fa3}
+
+  footer{padding:30px 0;color:#9aa0ac;font-size:13px;text-align:center;border-top:1px solid var(--line)}
 
   @media (max-width:860px){
-    .hero{grid-template-columns:1fr;gap:30px;padding:14px 0 38px}
-    h1{font-size:33px}.sub{font-size:17px}
-    .feat .grid{grid-template-columns:1fr}
-    .shot{order:-1}
+    h2{font-size:27px}
+    .hero{padding:44px 0 0}.hero h1{font-size:36px}.hero .sub{font-size:18px}
+    .stage{margin-top:38px;padding:38px 14px 0}
+    .statgrid{grid-template-columns:1fr 1fr;gap:24px}
+    .frow{grid-template-columns:1fr;gap:26px;margin-bottom:52px}
+    .frow.rev .fcopy{order:0}
+    .emailgrid{grid-template-columns:1fr;gap:34px}
+    .vsgrid{grid-template-columns:1fr}
+    .bgrid{grid-template-columns:1fr 1fr}
+    .stagewrap .callout{display:none}
   }
 </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="top">
+
+  <div class="top">
+    <div class="wrap topin">
       <div class="brand"><svg viewBox="0 0 64 64" width="30" height="30" role="img" aria-label="PingMyStock"><rect width="64" height="64" rx="15" fill="#3538cd"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M28 15 L44 24 L44 42 L28 51 L12 42 L12 24 Z"/><path d="M28 33 L44 24"/><path d="M28 33 L28 51"/><path d="M28 33 L12 24"/><path d="M36 19.5 L20 28.5"/></g><path d="M46 14 A8 8 0 0 1 54 22" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M46 8.5 A13.5 13.5 0 0 1 59.5 22" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><circle cx="46" cy="22" r="3.8" fill="#23c562"/></svg><span>Ping<span style="color:var(--indigo)">My</span>Stock</span></div>
-      <span class="pill">Early access</span>
+      <a class="nav-cta" href="#email" onclick="document.getElementById('email').focus()">Get early access</a>
     </div>
-
-    <section class="hero">
-      <div>
-        <div class="eyebrow">For Shopify store owners</div>
-        <h1>Back-in-stock alerts that <span class="u">can&rsquo;t fail silently</span>.</h1>
-        <p class="sub">PingMyStock emails your shoppers the moment a sold-out item is back &mdash; logs every send, warns <em>you</em> instantly if one fails, and shows the money waiting on each out-of-stock product.</p>
-
-        <form class="form" id="f" novalidate>
-          <div class="lead">Get early access &mdash; free for first users</div>
-          <input class="field" type="email" name="email" id="email" placeholder="Your email address" autocomplete="email" required>
-          <input class="field" type="text" name="store" id="store" placeholder="Your store URL (optional)" autocomplete="off">
-          <textarea class="field" name="notes" id="notes" placeholder="What would make this a must-have for you? (optional)"></textarea>
-          <input class="hp" type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true">
-          <button class="btn" type="submit" id="btn">Get early access</button>
-          <div class="micro"><b>One email when it&rsquo;s ready.</b> No spam, and your address is never shared.</div>
-          <div class="err" id="err"></div>
-          <div class="ok" id="ok">
-            <div class="big">You&rsquo;re on the list 🎉</div>
-            <div class="sm">I&rsquo;ll email you the moment early access opens. Thank you for helping shape it.</div>
-          </div>
-        </form>
-      </div>
-
-      <figure class="shot">
-        <img src="dashboard.png?v=2" alt="PingMyStock dashboard showing money waiting on sold-out items, a restock priority list, and a failed-send alert">
-        <figcaption class="shotcap">The merchant dashboard — what no other restock app shows you.</figcaption>
-      </figure>
-    </section>
   </div>
 
-  <section class="strip">
+  <!-- HERO -->
+  <section class="hero">
     <div class="wrap">
-      <h2>Most back-in-stock apps fail silently.</h2>
-      <p>They blast your shoppers an email and call it done. When the sending quietly breaks &mdash; and it does &mdash; nobody tells you. You just stop making the sales, and never know why. Real Shopify reviews of the popular apps:</p>
-      <div class="quote">&ldquo;More than 5,000 people signed up for restock alerts &mdash; the app didn&rsquo;t send a single email.&rdquo;</div>
-      <p><span class="em">PingMyStock is built so that can&rsquo;t happen to you.</span> Every send is logged, and the second one fails, you get an alert &mdash; before the lost sale becomes invisible.</p>
+      <span class="eyebrow">For Shopify store owners</span>
+      <h1>Back-in-stock alerts that <span class="u">can't fail silently</span>.</h1>
+      <p class="sub">PingMyStock emails your shoppers the moment a sold-out item is back &mdash; logs every send, warns <em>you</em> instantly if one fails, and shows the money waiting on each out-of-stock product.</p>
+
+      <form class="form" id="f" novalidate>
+        <div class="flead">Get early access &mdash; free for first users</div>
+        <input class="field" type="email" name="email" id="email" placeholder="Your email address" autocomplete="email" required>
+        <input class="field" type="text" name="store" id="store" placeholder="Your store URL (optional)" autocomplete="off">
+        <textarea class="field" name="notes" id="notes" placeholder="What would make this a must-have for you? (optional)"></textarea>
+        <input class="hp" type="text" name="company" id="company" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn" type="submit" id="btn">Get early access</button>
+        <div class="micro"><b>One email when it's ready.</b> No spam, and your address is never shared.</div>
+        <div class="err" id="err"></div>
+        <div class="ok" id="ok">
+          <div class="big">You're on the list 🎉</div>
+          <div class="sm">I'll email you the moment early access opens. Thank you for helping shape it.</div>
+        </div>
+      </form>
+    </div>
+
+    <div class="stage">
+      <div class="stagewrap">
+        <div class="callout" style="top:16%;left:-12px"><span class="d" style="background:#23c562"></span> $4,820 demand waiting</div>
+        <div class="callout" style="bottom:20%;right:-14px"><span class="d" style="background:var(--indigo)"></span> Every send logged</div>
+        <div class="browser">
+          <div class="bbar"><span class="bdot" style="background:#ff5f57"></span><span class="bdot" style="background:#febc2e"></span><span class="bdot" style="background:#28c840"></span></div>
+          <img src="dashboard.png?v=2" alt="PingMyStock merchant dashboard showing the money waiting on sold-out items, a restock priority list, and a failed-send alert">
+        </div>
+      </div>
     </div>
   </section>
 
-  <div class="wrap">
-    <section class="feat">
-      <div class="grid">
-        <div class="card">
-          <div class="ic b">🔔</div>
-          <h3>Never miss a restock</h3>
-          <p>Shoppers click &ldquo;notify me&rdquo; on any sold-out item. The moment stock returns, everyone waiting is emailed automatically &mdash; in order.</p>
+  <!-- PRODUCT-PROOF STAT BAND -->
+  <section class="stats tint">
+    <div class="wrap statgrid">
+      <div class="stat"><div class="n">100%</div><div class="l">of emails logged &amp; verified</div></div>
+      <div class="stat"><div class="n">Instant</div><div class="l">alert when a send fails</div></div>
+      <div class="stat"><div class="n">$ / SKU</div><div class="l">demand waiting, ranked</div></div>
+      <div class="stat"><div class="n">~5 min</div><div class="l">setup, no code</div></div>
+    </div>
+  </section>
+
+  <!-- PROBLEM STRIP -->
+  <section class="strip">
+    <div class="wrap">
+      <h2>Most back-in-stock apps fail silently.</h2>
+      <p>They blast your shoppers an email and call it done. When the sending quietly breaks &mdash; and it does &mdash; nobody tells you. You just stop making the sales, and never know why. A real review of a popular restock app:</p>
+      <div class="qt">&ldquo;More than 5,000 people signed up for restock alerts &mdash; the app didn't send a single email.&rdquo;</div>
+      <p><span class="em">PingMyStock is built so that can't happen to you.</span> Every send is logged, and the second one fails, you get an alert &mdash; before the lost sale becomes invisible.</p>
+    </div>
+  </section>
+
+  <!-- FEATURE ROWS -->
+  <section class="feat">
+    <div class="wrap">
+
+      <div class="frow">
+        <div class="fcopy">
+          <h3>Proof every email actually sent</h3>
+          <p>A live log of every restock alert that went out &mdash; who, what, and when. No more hoping it worked.</p>
+          <ul class="chk">
+            <li><span class="ic">✓</span> Delivery status on every single send</li>
+            <li><span class="ic">✓</span> Searchable history per product and customer</li>
+            <li><span class="ic">✓</span> Proof you can actually point to</li>
+          </ul>
         </div>
-        <div class="card">
-          <div class="ic g">✓</div>
-          <h3>Proof every email sent</h3>
-          <p>See a live log of every alert that went out &mdash; and get warned the instant one fails to send, so a silent break can&rsquo;t cost you sales.</p>
-          <div class="tag">The part nobody else does</div>
-        </div>
-        <div class="card">
-          <div class="ic m">💰</div>
-          <h3>See the money waiting</h3>
-          <p>The dollar value of demand sitting in each sold-out variant &mdash; so you restock what&rsquo;ll actually pay you back first, not by guesswork.</p>
+        <div class="fvis">
+          <div class="callout" style="top:-14px;right:14px"><span class="d" style="background:#23c562"></span> 100% delivered</div>
+          <div class="ui">
+            <div class="ui-h">Recent restock emails</div>
+            <div class="lrow"><span class="tick ok2">✓</span><span class="em2">Sent to sara@email.com</span><span class="tm">2:31 pm</span></div>
+            <div class="lrow"><span class="tick ok2">✓</span><span class="em2">Sent to mike.t@email.com</span><span class="tm">2:31 pm</span></div>
+            <div class="lrow"><span class="tick ok2">✓</span><span class="em2">Sent to priya@email.com</span><span class="tm">11:02 am</span></div>
+            <div class="lrow"><span class="tick ok2">✓</span><span class="em2">Sent to dan.k@email.com</span><span class="tm">yesterday</span></div>
+          </div>
         </div>
       </div>
-    </section>
 
-    <section class="close">
-      <h2>Help shape it &mdash; and get it free.</h2>
-      <p>PingMyStock is being built right now. Early-access users get it free and help decide what it becomes.</p>
+      <div class="frow rev">
+        <div class="fcopy">
+          <h3>Know the instant a send fails</h3>
+          <p>If an email bounces or your sender breaks, PingMyStock tells <em>you</em> right away &mdash; not weeks later when the sales are already gone.</p>
+          <ul class="chk">
+            <li><span class="ic">✓</span> Real-time failure alerts, straight to you</li>
+            <li><span class="ic">✓</span> The exact reason it failed</li>
+            <li><span class="ic">✓</span> Fix it before it costs you a customer</li>
+          </ul>
+        </div>
+        <div class="fvis">
+          <div class="callout" style="top:-14px;left:14px"><span class="d" style="background:var(--indigo)"></span> You're told instantly</div>
+          <div class="ui">
+            <div class="alert">
+              <div class="t">⚠ 1 restock email failed to send</div>
+              <div class="s">jane.doe@email.com — recipient mailbox full, 2:14 pm. They were not notified.</div>
+              <span class="ping">⚡ Alert sent to you</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="frow">
+        <div class="fcopy">
+          <h3>See the money waiting on every sold-out item</h3>
+          <p>The dollar value of demand sitting in each out-of-stock product &mdash; so you restock what'll actually pay you back first, not by guesswork.</p>
+          <ul class="chk">
+            <li><span class="ic">✓</span> Demand ranked by revenue, not headcount</li>
+            <li><span class="ic">✓</span> Know exactly what to reorder first</li>
+            <li><span class="ic">✓</span> The view no other restock app shows you</li>
+          </ul>
+        </div>
+        <div class="fvis">
+          <div class="callout" style="top:-14px;right:14px"><span class="d" style="background:#23c562"></span> Restock by revenue</div>
+          <div class="ui">
+            <div class="hero-money"><div class="lbl">Money waiting on sold-out items</div><div class="big">$4,820</div></div>
+            <div class="rrow"><span class="nm">Merino wool hoodie — M</span><span class="vv">12 waiting · <b>$1,548</b></span></div>
+            <div class="rrow"><span class="nm">Leather weekender bag</span><span class="vv">8 waiting · <b>$1,432</b></span></div>
+            <div class="rrow"><span class="nm">Cast iron skillet, 12&Prime;</span><span class="vv">9 waiting · <b>$891</b></span></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- CUSTOMER EMAIL -->
+  <section class="emailsec">
+    <div class="wrap">
+      <div style="text-align:center">
+        <span class="eyebrow" style="background:rgba(53,56,205,.28);color:#cfd2ff">The shopper's side</span>
+        <h2>And your shopper gets an email that actually arrives.</h2>
+        <p class="lead">The moment a sold-out item is back, the people waiting get a clean, on-brand alert &mdash; with a one-tap path back to buy.</p>
+      </div>
+      <div class="emailgrid">
+        <div class="ecopy">
+          <h3>From "notify me" to back in their cart</h3>
+          <p>Shoppers tap "notify me" on any sold-out product. When it returns, everyone waiting is emailed automatically &mdash; in the order they signed up.</p>
+          <ul class="chk">
+            <li><span class="ic">✓</span> Auto-sent the instant stock returns</li>
+            <li><span class="ic">✓</span> On-brand, with a direct "shop now" link</li>
+            <li><span class="ic">✓</span> And logged on your side as proof it landed</li>
+          </ul>
+        </div>
+        <div class="phonewrap">
+          <div class="callout" style="top:8%;left:-8px"><span class="d" style="background:#23c562"></span> ✓ Delivered · 9:02 AM</div>
+          <div class="phone">
+            <div class="screen">
+              <div class="sbar"><span>9:02</span><span>Inbox</span></div>
+              <div class="inbox">
+                <div class="av">B</div>
+                <div>
+                  <div class="who">Bloom Botanicals</div>
+                  <div class="subj">Good news — your item is back in stock</div>
+                  <div class="pre">The Merino Wool Hoodie you wanted is…</div>
+                </div>
+                <div class="when">now</div>
+              </div>
+              <div class="ebody">
+                <div class="ethumb">Merino Wool Hoodie</div>
+                <div class="et">It's back in stock! 🎉</div>
+                <div class="ep">The Merino Wool Hoodie (size M) you asked about is available again — but it's selling fast.</div>
+                <a class="shopbtn" href="#email" onclick="event.preventDefault();document.getElementById('email').focus()">Shop now</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BEFORE / AFTER -->
+  <section class="vs tint">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow">Why switch</span>
+      <h2>Most back-in-stock apps go quiet when it matters.</h2>
+      <div class="vsquote">
+        <div class="stars">★★★★★</div>
+        <div class="qt">&ldquo;This is exactly the problem we had with our old app — it stopped sending and we had no idea until customers complained.&rdquo;</div>
+        <div class="by">— the gap PingMyStock was built to close</div>
+      </div>
+      <div class="vsgrid">
+        <div class="vscol other">
+          <div class="ch">Other restock apps</div>
+          <div class="vsitem"><span class="m">✗</span> Send and pray — no proof the email arrived</div>
+          <div class="vsitem"><span class="m">✗</span> Silent failures you discover weeks later</div>
+          <div class="vsitem"><span class="m">✗</span> No idea which sold-out item is costing you most</div>
+          <div class="vsitem"><span class="m">✗</span> Demand data buried, or missing entirely</div>
+        </div>
+        <div class="vscol us">
+          <div class="ch">PingMyStock</div>
+          <div class="vsitem"><span class="m">✓</span> Every email verified and logged</div>
+          <div class="vsitem"><span class="m">✓</span> Instant alert the moment one fails</div>
+          <div class="vsitem"><span class="m">✓</span> See the exact $ of demand waiting on each item</div>
+          <div class="vsitem"><span class="m">✓</span> Restock the products that actually move revenue</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENTO REASSURANCE -->
+  <section class="bento">
+    <div class="wrap">
+      <div class="bgrid">
+        <div class="btile"><div class="bi">⌁</div><h4>Works with your theme</h4><p>One-click "notify me" button, no code or theme editing.</p></div>
+        <div class="btile"><div class="bi">⏱</div><h4>Live in ~5 minutes</h4><p>Install, turn it on, and you're catching demand the same day.</p></div>
+        <div class="btile"><div class="bi">🔒</div><h4>Your data stays yours</h4><p>Shopper emails are yours — never sold, never shared.</p></div>
+        <div class="btile"><div class="bi">★</div><h4>Free during early access</h4><p>Help shape it and get it free while we're in beta.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq tint">
+    <div class="wrap" style="text-align:center">
+      <span class="eyebrow">Good to know</span>
+      <h2>Questions, answered.</h2>
+      <div class="faqwrap" style="text-align:left">
+        <details open><summary>Does it work with my theme?<span class="pm">+</span></summary><p>Yes. PingMyStock adds a "notify me" button to your sold-out products through Shopify's app blocks — no code and no theme editing required.</p></details>
+        <details><summary>How do you know an email was actually delivered?<span class="pm">+</span></summary><p>Every send is recorded with its delivery status. You get a live log of who was emailed and when — so "did it send?" is never a guess.</p></details>
+        <details><summary>What happens if a send fails?<span class="pm">+</span></summary><p>You're alerted right away, with the reason it failed, so you can fix it before it costs you the sale. That proactive alert is the whole point.</p></details>
+        <details><summary>Do you store my customers' data?<span class="pm">+</span></summary><p>Waitlist emails belong to you. They're used only to send the restock alerts you set up — never sold or shared.</p></details>
+        <details><summary>What does it cost?<span class="pm">+</span></summary><p>It's free for early-access users while we're in beta. Simple, fair pricing comes later — early users keep the best deal.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <!-- FINAL CTA -->
+  <section class="final">
+    <div class="wrap">
+      <h2>Stop losing silent sales.</h2>
+      <p>Be one of the first stores on PingMyStock — free, and you help decide what it becomes.</p>
       <a class="cta2" href="#email" onclick="document.getElementById('email').focus()">Get early access</a>
-    </section>
-  </div>
+      <div class="rea">One email when it's ready. No spam, ever.</div>
+    </div>
+  </section>
 
   <footer>
     <div class="wrap">PingMyStock &mdash; back-in-stock done right for Shopify. Built by an indie maker, validating before launch. &copy; 2026</div>
   </footer>
 
 <script>
-  // ---- Capture config: fill these in after creating the Google Form ----
-  // action = the form's .../formResponse URL; fields map our inputs to its entry.NNN names.
   var CAPTURE = {
     action: "https://docs.google.com/forms/d/e/1FAIpQLSeRQYbr9fA1VfEiCHfmsfSvfwFgNMGEJysuscjahWKQnBJHNg/formResponse",
     fields: { email: "entry.1883891046", store: "entry.1381479905", notes: "entry.1221894024" }
   };
-
-  var f = document.getElementById('f'),
-      btn = document.getElementById('btn'),
-      ok = document.getElementById('ok'),
-      err = document.getElementById('err');
+  var f = document.getElementById('f'), btn = document.getElementById('btn'), ok = document.getElementById('ok'), err = document.getElementById('err');
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
   function fail(msg){ err.textContent = msg; err.style.display = 'block'; }
-
   f.addEventListener('submit', function(e){
     e.preventDefault();
     err.style.display = 'none';
-    if (document.getElementById('company').value) return; // honeypot
+    if (document.getElementById('company').value) return;
     var email = document.getElementById('email').value.trim();
     if (!EMAIL_RE.test(email)) { fail('Please enter a valid email address.'); return; }
-
     btn.disabled = true; btn.textContent = 'Joining…';
-
     var fd = new FormData();
     fd.append(CAPTURE.fields.email, email);
     fd.append(CAPTURE.fields.store, document.getElementById('store').value.trim());
     fd.append(CAPTURE.fields.notes, document.getElementById('notes').value.trim());
-
-    var done = function(){
-      f.querySelectorAll('.field,.btn,.lead,.micro').forEach(function(n){ n.style.display='none'; });
-      ok.style.display = 'block';
-    };
-
-    if (CAPTURE.action.indexOf('http') !== 0) { done(); return; } // not wired yet: optimistic
-
-    // Google Forms is no-cors: we can't read the response, so resolve OR reject both = submitted.
-    fetch(CAPTURE.action, { method:'POST', mode:'no-cors', body: fd })
-      .then(done).catch(done);
+    var done = function(){ f.querySelectorAll('.field,.btn,.flead,.micro').forEach(function(n){ n.style.display='none'; }); ok.style.display = 'block'; };
+    if (CAPTURE.action.indexOf('http') !== 0) { done(); return; }
+    fetch(CAPTURE.action, { method:'POST', mode:'no-cors', body: fd }).then(done).catch(done);
   });
 </script>
 </body>
