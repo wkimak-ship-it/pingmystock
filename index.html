@@ -71,9 +71,13 @@
   .bdot{width:11px;height:11px;border-radius:50%}
   .browser img{width:100%;display:block}
   .stagewrap{position:relative;max-width:880px;margin:0 auto}
-  .callout{position:absolute;display:inline-flex;align-items:center;gap:6px;padding:7px 11px;border-radius:9px;
-    font-size:13px;font-weight:600;background:#fff;color:var(--navy);box-shadow:0 8px 24px rgba(20,23,42,.18);z-index:3}
-  .callout .d{width:8px;height:8px;border-radius:50%}
+  .callout{position:absolute;display:inline-flex;align-items:center;gap:9px;padding:13px 19px;border-radius:13px;
+    font-size:16.5px;font-weight:700;background:#fff;color:var(--navy);box-shadow:0 18px 44px rgba(20,23,42,.24);z-index:3;
+    opacity:0;transform:scale(.5);transition:opacity .55s ease}
+  .callout.in{opacity:1;animation:cgrow .7s cubic-bezier(.2,.85,.25,1) forwards, cfloat 4s ease-in-out .75s infinite}
+  @keyframes cgrow{from{transform:scale(.5)}to{transform:scale(1)}}
+  @keyframes cfloat{0%,100%{transform:scale(1) translateY(0)}50%{transform:scale(1) translateY(-7px)}}
+  .callout .d{width:12px;height:12px;border-radius:50%}
 
   /* stat band */
   .stats{padding:34px 0}
@@ -157,9 +161,13 @@
   .vsgrid{display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:880px;margin:0 auto}
   .vscol{border-radius:16px;padding:26px 26px 30px}
   .vscol.other{background:#fff;border:1px solid var(--line)}
-  .vscol.us{background:#fff;border:2px solid rgba(53,56,205,.55);box-shadow:0 22px 50px rgba(53,56,205,.12)}
-  .vscol .ch{font-size:13px;font-weight:700;text-transform:none;margin-bottom:16px}
-  .vscol.other .ch{color:#9aa0ac}.vscol.us .ch{color:var(--indigo)}
+  .vscol.us{background:#f2f2fe;border:2px solid var(--indigo);box-shadow:0 28px 62px rgba(53,56,205,.22);position:relative}
+  .vsbadge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:var(--indigo);color:#fff;
+    font-size:12.5px;font-weight:700;padding:6px 16px;border-radius:999px;white-space:nowrap;box-shadow:0 8px 20px rgba(53,56,205,.34)}
+  .vscol .ch{font-size:14px;font-weight:700;text-transform:none;margin-bottom:16px}
+  .vscol.other .ch{color:#9aa0ac}
+  .vscol.us .ch{color:var(--indigo);display:flex;align-items:center;gap:8px;font-size:16px}
+  @media (min-width:861px){.vscol.us{transform:translateY(-8px)}}
   .vsitem{display:flex;gap:11px;align-items:flex-start;padding:11px 0;font-size:15.5px;border-top:1px solid #f2f3f6}
   .vsitem:first-of-type{border-top:none}
   .vsitem .m{flex:0 0 auto;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;margin-top:1px}
@@ -409,7 +417,8 @@
           <div class="vsitem"><span class="m">✗</span> Demand data buried, or missing entirely</div>
         </div>
         <div class="vscol us">
-          <div class="ch">PingMyStock</div>
+          <span class="vsbadge">The PingMyStock way</span>
+          <div class="ch"><svg viewBox="0 0 64 64" width="22" height="22" role="img" aria-label="PingMyStock"><rect width="64" height="64" rx="15" fill="#3538cd"/><g fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M28 15 L44 24 L44 42 L28 51 L12 42 L12 24 Z"/><path d="M28 33 L44 24"/><path d="M28 33 L28 51"/><path d="M28 33 L12 24"/><path d="M36 19.5 L20 28.5"/></g><path d="M46 14 A8 8 0 0 1 54 22" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><path d="M46 8.5 A13.5 13.5 0 0 1 59.5 22" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/><circle cx="46" cy="22" r="3.8" fill="#23c562"/></svg>PingMyStock</div>
           <div class="vsitem"><span class="m">✓</span> Every email verified and logged</div>
           <div class="vsitem"><span class="m">✓</span> Instant alert the moment one fails</div>
           <div class="vsitem"><span class="m">✓</span> See the exact $ of demand waiting on each item</div>
@@ -461,6 +470,16 @@
   </footer>
 
 <script>
+  (function(){
+    var els = document.querySelectorAll('.callout');
+    if (!('IntersectionObserver' in window)) { els.forEach(function(e){ e.classList.add('in'); }); }
+    else {
+      var io = new IntersectionObserver(function(entries){
+        entries.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); } });
+      }, { threshold: 0.35 });
+      els.forEach(function(e){ io.observe(e); });
+    }
+  })();
   var CAPTURE = {
     action: "https://docs.google.com/forms/d/e/1FAIpQLSeRQYbr9fA1VfEiCHfmsfSvfwFgNMGEJysuscjahWKQnBJHNg/formResponse",
     fields: { email: "entry.1883891046", store: "entry.1381479905", notes: "entry.1221894024" }
