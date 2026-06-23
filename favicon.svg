@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="PingMyStock">
+<rect width="64" height="64" rx="14" fill="#3538cd"/>
+<path d="M32 15 L48 24 L48 42 L32 51 L16 42 L16 24 Z" fill="#ffffff"/>
+<circle cx="49" cy="21" r="6.5" fill="#23c562" stroke="#3538cd" stroke-width="3"/>
+</svg>
