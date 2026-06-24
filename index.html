@@ -88,7 +88,9 @@
   /* problem strip */
   .strip{background:var(--navy);color:#fff;padding:62px 0}
   .strip h2{color:#fff}
-  .strip .qt{border-left:3px solid #ffd24a;padding:8px 0 8px 18px;margin:18px 0;font-size:19px;font-style:italic;color:#e9eaf3;max-width:40em}
+  .strip .qgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(232px,1fr));gap:18px;margin:24px 0}
+  .strip .qcard{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.10);border-left:3px solid #ffd24a;border-radius:12px;padding:18px 20px;font-size:15.5px;font-style:italic;color:#eef0f7;line-height:1.5}
+  .strip .qcard span{display:block;font-style:normal;font-size:12px;color:#9aa0bd;margin-top:12px}
   .strip p{color:#b9bdce;font-size:17px;max-width:44em}
   .strip .em{color:#fff;font-weight:650}
 
@@ -275,8 +277,12 @@
   <section class="strip">
     <div class="wrap">
       <h2>Most back-in-stock apps fail silently.</h2>
-      <p>They blast your shoppers an email and call it done. When the sending quietly breaks &mdash; and it does &mdash; nobody tells you. You just stop making the sales, and never know why. A real review of a popular restock app:</p>
-      <div class="qt">&ldquo;More than 5,000 people signed up for restock alerts &mdash; the app didn't send a single email.&rdquo;</div>
+      <p>They blast your shoppers an email and call it done. When the sending quietly breaks &mdash; and it does &mdash; nobody tells you. You just stop making the sales, and never know why. Real reviews of popular restock apps:</p>
+      <div class="qgrid">
+        <div class="qcard">&ldquo;More than 5,000 people signed up for restock alerts &mdash; and the app didn&rsquo;t send a single email.&rdquo;<span>&mdash; real Shopify review</span></div>
+        <div class="qcard">&ldquo;Their system failed to send the emails, leaving thousands of customers uninformed.&rdquo;<span>&mdash; real Shopify review</span></div>
+        <div class="qcard">&ldquo;I have no idea when it broke &mdash; it just quietly stopped sending any notifications.&rdquo;<span>&mdash; real Shopify review</span></div>
+      </div>
       <p><span class="em">PingMyStock is built so that can't happen to you.</span> Every send is logged, and the second one fails, you get an alert &mdash; before the lost sale becomes invisible.</p>
     </div>
   </section>
